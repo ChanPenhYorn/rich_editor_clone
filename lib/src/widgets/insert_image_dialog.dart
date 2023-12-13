@@ -69,8 +69,6 @@ class _InsertImageDialogState extends State<InsertImageDialog> {
     } else {
       image = await picker.pickImage(
         source: ImageSource.gallery,
-        maxWidth: 800.0,
-        maxHeight: 600.0,
       );
     }
 

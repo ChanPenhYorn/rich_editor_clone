@@ -107,6 +107,21 @@ class RichEditorState extends State<RichEditor> {
                 );
               }
             },
+            initialOptions: InAppWebViewGroupOptions(
+              crossPlatform: InAppWebViewOptions(
+                javaScriptEnabled: true,
+                useOnLoadResource: true,
+                supportZoom: false,
+              ),
+            ),
+
+            onPageCommitVisible: (controller, url) {
+              controller.evaluateJavascript(source: """
+              var style = document.createElement('style');
+              style.innerHTML = "img {max-width: 100%; height: auto;object-fit: contain;pointer-events: none;user-select: none; touch-action: none; touch-action: pan-x pan-y;  overflow: hidden;}"
+              document.head.appendChild(style);
+          """);
+            },
             onLoadStop: (controller, link) async {
               if (link!.path != 'blank') {
                 javascriptExecutor.init(_controller!);
@@ -114,10 +129,12 @@ class RichEditorState extends State<RichEditor> {
                 _addJSListener();
               }
             },
+
             // javascriptMode: JavascriptMode.unrestricted,
             // gestureNavigationEnabled: false,
             gestureRecognizers: [
               Factory(() => VerticalDragGestureRecognizer()..onUpdate = (_) {}),
+              Factory(() => HorizontalDragGestureRecognizer()),
             ].toSet(),
             onLoadError: (controller, url, code, e) {
               print("error $e $code");

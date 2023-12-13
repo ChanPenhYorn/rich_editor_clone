@@ -1,10 +1,10 @@
 name: rich_editor
 description: WYSIWYG editor for Flutter with a rich set of supported formatting options.
 version: 0.0.7
-homepage: https://github.com/JideGuru/rich_editor
+homepage: https://github.com/VingMinear/rich_editor_clone.git
 
 environment:
-  sdk: '>=3.0.6 <4.0.0'
+  sdk: ">=3.0.6 <4.0.0"
   flutter: ">=2.11.0"
 
 dependencies:

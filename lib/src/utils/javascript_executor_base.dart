@@ -13,7 +13,7 @@ import '../models/command_state.dart';
 class JavascriptExecutorBase {
   InAppWebViewController? _controller;
 
-  String defaultHtml = "<p>\u200B</p>";
+  String defaultHtml = "";
 
   String editorStateChangedCallbackScheme = "editor-state-changed-callback://";
 
