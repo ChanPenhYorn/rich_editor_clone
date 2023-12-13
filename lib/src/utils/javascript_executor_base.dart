@@ -218,9 +218,9 @@ class JavascriptExecutorBase {
 
   /// The rotation parameter is used to signal that the image is rotated and should be rotated by CSS by given value.
   /// Rotation can be one of the following values: 0, 90, 180, 270.
+  /// off size
   insertImage(String url, {String? alt, int? rotation}) async {
     if (rotation == null) rotation = 0;
-
     if (alt == null) alt = '';
     await executeJavascript(
       "insertImage('$url', '$alt',$rotation);",
