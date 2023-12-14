@@ -17,13 +17,49 @@ class EditorToolBar extends StatelessWidget {
   final Function(File image)? getImageUrl;
   final Function(File video)? getVideoUrl;
   final JavascriptExecutorBase javascriptExecutor;
-  final bool? enableVideo;
+  final bool? enableVideo,
+      bold,
+      italic,
+      insertLink,
+      insertImage,
+      underLine,
+      strikeThrough,
+      superSubscript,
+      subScript,
+      clearFormat,
+      undo,
+      redo,
+      blockQuote,
+      font,
+      fontSize,
+      txtColor,
+      bgColor,
+      increaseIndent,
+      decreaseIndent;
 
   EditorToolBar({
     this.getImageUrl,
     this.getVideoUrl,
     required this.javascriptExecutor,
     this.enableVideo,
+    this.bold,
+    this.italic,
+    this.insertLink,
+    this.insertImage,
+    this.underLine,
+    this.strikeThrough,
+    this.superSubscript,
+    this.subScript,
+    this.clearFormat,
+    this.undo,
+    this.redo,
+    this.blockQuote,
+    this.font,
+    this.fontSize,
+    this.txtColor,
+    this.bgColor,
+    this.increaseIndent,
+    this.decreaseIndent,
   });
 
   @override
@@ -110,62 +146,6 @@ class EditorToolBar extends StatelessWidget {
                       }
                     },
                   ),
-                ),
-                TabButton(
-                  tooltip: 'Underline',
-                  icon: Icons.format_underline,
-                  onTap: () async {
-                    await javascriptExecutor.setUnderline();
-                  },
-                ),
-                TabButton(
-                  tooltip: 'Strike through',
-                  icon: Icons.format_strikethrough,
-                  onTap: () async {
-                    await javascriptExecutor.setStrikeThrough();
-                  },
-                ),
-                TabButton(
-                  tooltip: 'Superscript',
-                  icon: Icons.superscript,
-                  onTap: () async {
-                    await javascriptExecutor.setSuperscript();
-                  },
-                ),
-                TabButton(
-                  tooltip: 'Subscript',
-                  icon: Icons.subscript,
-                  onTap: () async {
-                    await javascriptExecutor.setSubscript();
-                  },
-                ),
-                TabButton(
-                  tooltip: 'Clear format',
-                  icon: Icons.format_clear,
-                  onTap: () async {
-                    await javascriptExecutor.removeFormat();
-                  },
-                ),
-                TabButton(
-                  tooltip: 'Undo',
-                  icon: Icons.undo,
-                  onTap: () async {
-                    await javascriptExecutor.undo();
-                  },
-                ),
-                TabButton(
-                  tooltip: 'Redo',
-                  icon: Icons.redo,
-                  onTap: () async {
-                    await javascriptExecutor.redo();
-                  },
-                ),
-                TabButton(
-                  tooltip: 'Blockquote',
-                  icon: Icons.format_quote,
-                  onTap: () async {
-                    await javascriptExecutor.setBlockQuote();
-                  },
                 ),
                 TabButton(
                   tooltip: 'Font format',
@@ -255,6 +235,64 @@ class EditorToolBar extends StatelessWidget {
                       await javascriptExecutor.setTextBackgroundColor(color);
                   },
                 ),
+
+                TabButton(
+                  tooltip: 'Underline',
+                  icon: Icons.format_underline,
+                  onTap: () async {
+                    await javascriptExecutor.setUnderline();
+                  },
+                ),
+                TabButton(
+                  tooltip: 'Strike through',
+                  icon: Icons.format_strikethrough,
+                  onTap: () async {
+                    await javascriptExecutor.setStrikeThrough();
+                  },
+                ),
+                // TabButton(
+                //   tooltip: 'Superscript',
+                //   icon: Icons.superscript,
+                //   onTap: () async {
+                //     await javascriptExecutor.setSuperscript();
+                //   },
+                // ),
+                // TabButton(
+                //   tooltip: 'Subscript',
+                //   icon: Icons.subscript,
+                //   onTap: () async {
+                //     await javascriptExecutor.setSubscript();
+                //   },
+                // ),
+                // TabButton(
+                //   tooltip: 'Clear format',
+                //   icon: Icons.format_clear,
+                //   onTap: () async {
+                //     await javascriptExecutor.removeFormat();
+                //   },
+                // ),
+                TabButton(
+                  tooltip: 'Undo',
+                  icon: Icons.undo,
+                  onTap: () async {
+                    await javascriptExecutor.undo();
+                  },
+                ),
+                TabButton(
+                  tooltip: 'Redo',
+                  icon: Icons.redo,
+                  onTap: () async {
+                    await javascriptExecutor.redo();
+                  },
+                ),
+                // TabButton(
+                //   tooltip: 'Blockquote',
+                //   icon: Icons.format_quote,
+                //   onTap: () async {
+                //     await javascriptExecutor.setBlockQuote();
+                //   },
+                // ),
+
                 TabButton(
                   tooltip: 'Increase Indent',
                   icon: Icons.format_indent_increase,
