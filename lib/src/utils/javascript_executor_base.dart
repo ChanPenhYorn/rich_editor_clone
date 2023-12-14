@@ -223,7 +223,7 @@ class JavascriptExecutorBase {
     if (rotation == null) rotation = 0;
     if (alt == null) alt = '';
     await executeJavascript(
-      "insertImage('$url', '$alt',$rotation);",
+      "insertImage('$url', '$alt',$rotation);document.execCommand('insertHTML', false, '<br>');",
     );
   }
 

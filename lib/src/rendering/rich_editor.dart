@@ -19,7 +19,7 @@ class RichEditor extends StatefulWidget {
   final bool? zoom, horizontalScroll;
   final Decoration? decoration;
   final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
-  final EdgeInsetsGeometry? padding;
+
   RichEditor({
     Key? key,
     this.value,
@@ -30,7 +30,6 @@ class RichEditor extends StatefulWidget {
     this.horizontalScroll,
     this.gestureRecognizers,
     this.decoration,
-    this.padding,
   }) : super(key: key);
 
   @override
@@ -100,8 +99,10 @@ class RichEditorState extends State<RichEditor> {
         ),
         Expanded(
           child: Container(
-            decoration: widget.decoration,
-            padding: widget.padding,
+            decoration: widget.decoration ??
+                BoxDecoration(
+                  color: Colors.white,
+                ),
             child: InAppWebView(
               key: _mapKey,
               onWebViewCreated: (controller) async {
@@ -120,6 +121,7 @@ class RichEditorState extends State<RichEditor> {
               },
               initialOptions: InAppWebViewGroupOptions(
                 crossPlatform: InAppWebViewOptions(
+                  transparentBackground: true,
                   javaScriptEnabled: true,
                   useOnLoadResource: true,
                   clearCache: true,
@@ -132,7 +134,7 @@ class RichEditorState extends State<RichEditor> {
               onPageCommitVisible: (controller, url) {
                 controller.evaluateJavascript(source: """
                 var style = document.createElement('style');
-                style.innerHTML = "img {border:none;max-width: 100%; height: auto;object-fit: contain;pointer-events: none;user-select: none; touch-action: none; touch-action: pan-x pan-y;  overflow: hidden;}"
+                style.innerHTML = "img {border:none;max-width: auto; height: auto;object-fit: contain;pointer-events: none;user-select: none; touch-action: none; touch-action: pan-x pan-y;  overflow: hidden;}"
                 document.head.appendChild(style);
             """);
               },
