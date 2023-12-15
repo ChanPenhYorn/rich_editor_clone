@@ -100,89 +100,102 @@ class RichEditorState extends State<RichEditor> {
           child: _buildToolBar(),
         ),
         Expanded(
-          child: loading
-              ? Center(
-                  child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                ))
-              : Container(
-                  decoration: widget.decoration ??
-                      BoxDecoration(
-                        color: Colors.white,
-                      ),
-                  child: InAppWebView(
-                    key: _mapKey,
-                    onLoadResource: (controller, resource) {
-                      log("message");
-                    },
-                    onLoadStart: (controller, url) async {
+          child: Container(
+            decoration: widget.decoration ??
+                BoxDecoration(
+                  color: Colors.white,
+                ),
+            child: Stack(
+              children: [
+                InAppWebView(
+                  key: _mapKey,
+                  onLoadResource: (controller, resource) async {
+                    setState(() {
+                      loading = false;
+                    });
+                  },
+                  onLoadStart: (controller, url) async {
+                    setState(() {
                       loading = true;
-                      setState(() {});
-                      await controller.isLoading().then((value) {
-                        loading = false;
-                        setState(() {});
-                      });
-                    },
-                    onWebViewCreated: (controller) async {
-                      _controller = controller;
-                      setState(() {});
-                      if (!kIsWeb && !Platform.isAndroid) {
-                        await _loadHtmlFromAssets();
-                      } else {
-                        await _controller!.loadUrl(
-                          urlRequest: URLRequest(
-                            url: Uri.tryParse(
-                                'file:///android_asset/flutter_assets/$assetPath'),
-                          ),
-                        );
-                      }
-                    },
-                    initialOptions: InAppWebViewGroupOptions(
-                      crossPlatform: InAppWebViewOptions(
-                        transparentBackground: true,
-                        javaScriptEnabled: true,
-                        useOnLoadResource: true,
-                        clearCache: true,
-                        disableHorizontalScroll:
-                            widget.horizontalScroll ?? true,
-                        supportZoom: widget.zoom ?? false,
-                        preferredContentMode: UserPreferredContentMode.MOBILE,
-                      ),
-                    ),
+                    });
+                  },
+                  onWebViewCreated: (controller) async {
+                    await controller.setOptions(
+                        options: InAppWebViewGroupOptions(
+                            android: AndroidInAppWebViewOptions(
+                      builtInZoomControls: false,
+                      displayZoomControls: false,
+                    )));
+                    _controller = controller;
 
-                    onPageCommitVisible: (controller, url) {
-                      controller.evaluateJavascript(source: """
+                    setState(() {});
+                    if (!kIsWeb && !Platform.isAndroid) {
+                      await _loadHtmlFromAssets();
+                    } else {
+                      await _controller!.loadUrl(
+                        urlRequest: URLRequest(
+                          url: Uri.tryParse(
+                              'file:///android_asset/flutter_assets/$assetPath'),
+                        ),
+                      );
+                    }
+                  },
+                  initialOptions: InAppWebViewGroupOptions(
+                    crossPlatform: InAppWebViewOptions(
+                      transparentBackground: true,
+                      javaScriptEnabled: true,
+                      useOnLoadResource: true,
+                      clearCache: true,
+                      disableHorizontalScroll: widget.horizontalScroll ?? true,
+                      supportZoom: widget.zoom ?? false,
+                      preferredContentMode: UserPreferredContentMode.MOBILE,
+                    ),
+                  ),
+
+                  onPageCommitVisible: (controller, url) {
+                    controller.evaluateJavascript(source: """
                 var style = document.createElement('style');
                 style.innerHTML = "img {border:none;max-width: auto; height: auto;object-fit: contain;pointer-events: none;user-select: none; touch-action: none; touch-action: pan-x pan-y;  overflow: hidden;}"
                 document.head.appendChild(style);
             """);
-                    },
-                    onLoadStop: (controller, link) async {
-                      if (link!.path != 'blank') {
-                        javascriptExecutor.init(_controller!);
-                        await _setInitialValues();
-                        _addJSListener();
-                      }
-                    },
+                  },
+                  onLoadStop: (controller, link) async {
+                    if (link!.path != 'blank') {
+                      javascriptExecutor.init(_controller!);
+                      await _setInitialValues();
+                      _addJSListener();
+                    }
+                  },
 
-                    // javascriptMode: JavascriptMode.unrestricted,
-                    // gestureNavigationEnabled: false,
-                    gestureRecognizers: widget.gestureRecognizers ??
-                        [
-                          Factory(() => VerticalDragGestureRecognizer()
-                            ..onUpdate = (_) {}),
-                          Factory(() => HorizontalDragGestureRecognizer()),
-                        ].toSet(),
-                    onLoadError: (controller, url, code, e) {
-                      print("error $e $code");
-                    },
-                    onConsoleMessage: (controller, consoleMessage) async {
-                      print(
-                        'WebView Message: $consoleMessage',
-                      );
-                    },
-                  ),
+                  // javascriptMode: JavascriptMode.unrestricted,
+                  // gestureNavigationEnabled: false,
+                  gestureRecognizers: widget.gestureRecognizers ??
+                      [
+                        Factory(() =>
+                            VerticalDragGestureRecognizer()..onUpdate = (_) {}),
+                        Factory(() => HorizontalDragGestureRecognizer()),
+                      ].toSet(),
+                  onLoadError: (controller, url, code, e) {
+                    print("error $e $code");
+                  },
+                  onConsoleMessage: (controller, consoleMessage) async {
+                    print(
+                      'WebView Message: $consoleMessage',
+                    );
+                  },
                 ),
+                Positioned.fill(
+                  child: Visibility(
+                    visible: loading,
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                    )),
+                  ),
+                )
+              ],
+            ),
+          ),
         ),
         Visibility(
           visible: widget.editorOptions!.barPosition == BarPosition.BOTTOM,
