@@ -109,16 +109,8 @@ class RichEditorState extends State<RichEditor> {
               children: [
                 InAppWebView(
                   key: _mapKey,
-                  onLoadResource: (controller, resource) async {
-                    setState(() {
-                      loading = false;
-                    });
-                  },
-                  onLoadStart: (controller, url) async {
-                    setState(() {
-                      loading = true;
-                    });
-                  },
+                  onLoadResource: (controller, resource) async {},
+                  onLoadStart: (controller, url) async {},
                   onWebViewCreated: (controller) async {
                     await controller.setOptions(
                         options: InAppWebViewGroupOptions(

@@ -10,12 +10,6 @@ class HeadingDialog extends StatelessWidget {
     {'id': '4', 'title': '<h4>Heading 4</h4>'},
     {'id': '5', 'title': '<h5>Heading 5</h5>'},
     {'id': '6', 'title': '<h6>Heading 6</h6>'},
-    {'id': 'p', 'title': '<p>Text body</p>'},
-    {
-      'id': 'pre',
-      'title': '<pre><font face=\"courier\">Preformat</font></pre>'
-    },
-    {'id': 'blockquote', 'title': '<blockquote>Quote</blockquote>'},
   ];
 
   @override
@@ -27,9 +21,12 @@ class HeadingDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             for (Map format in formats)
-              InkWell(
-                child: HtmlText(html: format['title']),
-                onTap: () => Navigator.pop(context, format['id']),
+              Container(
+                width: double.infinity,
+                child: ListTile(
+                  title: HtmlText(html: format['title']),
+                  onTap: () => Navigator.pop(context, format['id']),
+                ),
               )
           ],
         ),

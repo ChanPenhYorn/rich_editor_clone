@@ -173,24 +173,25 @@ class EditorToolBar extends StatelessWidget {
                   },
                 ),
                 // TODO: Show font button on iOS
-                Visibility(
-                  visible: (!kIsWeb && Platform.isAndroid),
-                  child: TabButton(
-                    tooltip: 'Font face',
-                    icon: Icons.font_download,
-                    onTap: () async {
-                      var command = await showDialog(
-                        // isScrollControlled: true,
-                        context: context,
-                        builder: (_) {
-                          return FontsDialog();
-                        },
-                      );
-                      if (command != null)
-                        await javascriptExecutor.setFontName(command);
-                    },
-                  ),
-                ),
+                // Visibility(
+                //   visible: (!kIsWeb && Platform.isAndroid),
+                //   child: TabButton(
+                //     tooltip: 'Font face',
+                //     icon: Icons.font_download,
+                //     onTap: () async {
+                //       var command = await showDialog(
+                //         // isScrollControlled: true,
+                //         context: context,
+                //         builder: (_) {
+                //           return FontsDialog();
+                //         },
+                //       );
+                //       if (command != null)
+                //         await javascriptExecutor.setFontName(command);
+                //     },
+                //   ),
+                // ),
+
                 TabButton(
                   icon: Icons.format_size,
                   tooltip: 'Font Size',
@@ -207,34 +208,34 @@ class EditorToolBar extends StatelessWidget {
                           .setFontSize(int.tryParse(command)!);
                   },
                 ),
-                TabButton(
-                  tooltip: 'Text Color',
-                  icon: Icons.format_color_text,
-                  onTap: () async {
-                    var color = await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return ColorPickerDialog(color: Colors.blue);
-                      },
-                    );
-                    if (color != null)
-                      await javascriptExecutor.setTextColor(color);
-                  },
-                ),
-                TabButton(
-                  tooltip: 'Background Color',
-                  icon: Icons.format_color_fill,
-                  onTap: () async {
-                    var color = await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return ColorPickerDialog(color: Colors.blue);
-                      },
-                    );
-                    if (color != null)
-                      await javascriptExecutor.setTextBackgroundColor(color);
-                  },
-                ),
+                // TabButton(
+                //   tooltip: 'Text Color',
+                //   icon: Icons.format_color_text,
+                //   onTap: () async {
+                //     var color = await showDialog(
+                //       context: context,
+                //       builder: (BuildContext context) {
+                //         return ColorPickerDialog(color: Colors.blue);
+                //       },
+                //     );
+                //     if (color != null)
+                //       await javascriptExecutor.setTextColor(color);
+                //   },
+                // ),
+                // TabButton(
+                //   tooltip: 'Background Color',
+                //   icon: Icons.format_color_fill,
+                //   onTap: () async {
+                //     var color = await showDialog(
+                //       context: context,
+                //       builder: (BuildContext context) {
+                //         return ColorPickerDialog(color: Colors.blue);
+                //       },
+                //     );
+                //     if (color != null)
+                //       await javascriptExecutor.setTextBackgroundColor(color);
+                //   },
+                // ),
 
                 TabButton(
                   tooltip: 'Underline',
@@ -293,20 +294,20 @@ class EditorToolBar extends StatelessWidget {
                 //   },
                 // ),
 
-                TabButton(
-                  tooltip: 'Increase Indent',
-                  icon: Icons.format_indent_increase,
-                  onTap: () async {
-                    await javascriptExecutor.setIndent();
-                  },
-                ),
-                TabButton(
-                  tooltip: 'Decrease Indent',
-                  icon: Icons.format_indent_decrease,
-                  onTap: () async {
-                    await javascriptExecutor.setOutdent();
-                  },
-                ),
+                // TabButton(
+                //   tooltip: 'Increase Indent',
+                //   icon: Icons.format_indent_increase,
+                //   onTap: () async {
+                //     await javascriptExecutor.setIndent();
+                //   },
+                // ),
+                // TabButton(
+                //   tooltip: 'Decrease Indent',
+                //   icon: Icons.format_indent_decrease,
+                //   onTap: () async {
+                //     await javascriptExecutor.setOutdent();
+                //   },
+                // ),
                 TabButton(
                   tooltip: 'Align Left',
                   icon: Icons.format_align_left_outlined,

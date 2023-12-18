@@ -32,11 +32,9 @@ class _InsertImageDialogState extends State<InsertImageDialog> {
             ),
           ],
         ),
-        TextField(
+        TextFormField(
           controller: link,
-          decoration: InputDecoration(
-            hintText: '',
-          ),
+          decoration: InputDecoration(hintText: 'https://...', isDense: true),
         ),
         Visibility(
           visible: !widget.isVideo,
@@ -46,10 +44,10 @@ class _InsertImageDialogState extends State<InsertImageDialog> {
             children: [
               SizedBox(height: 20.0),
               Text('Alt text (optional)'),
-              TextField(
+              TextFormField(
                 controller: alt,
                 decoration: InputDecoration(
-                  hintText: '',
+                  hintText: 'optional',
                 ),
               ),
             ],

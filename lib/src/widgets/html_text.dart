@@ -10,6 +10,7 @@ class HtmlText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: HtmlWidget(html),
+      alignment: Alignment.centerLeft,
       height: 40.0,
     );
   }
