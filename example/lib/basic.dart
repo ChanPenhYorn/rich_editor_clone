@@ -61,14 +61,14 @@ class BasicDemo extends StatelessWidget {
       body: RichEditor(
         key: keyEditor,
         value: '''
-        <img src="https://img.freepik.com/premium-photo/cute-asian-girl-pink_836063-183.jpg?w=740" >  
+      
         ''', // initial HTML data
         editorOptions: RichEditorOptions(
           placeholder: 'Start typing',
           // backgroundColor: Colors.blueGrey, // Editor's bg color
           // baseTextColor: Colors.white,
           // editor padding
-          padding: EdgeInsets.symmetric(horizontal: 5.0),
+          padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
           // font name
           baseFontFamily: 'sans-serif',
           // Position of the editing bar (BarPosition.TOP or BarPosition.BOTTOM)

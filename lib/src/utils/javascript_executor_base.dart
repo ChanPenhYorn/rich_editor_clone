@@ -6,12 +6,13 @@ import 'package:rich_editor/src/models/callbacks/did_html_change_listener.dart';
 import 'package:rich_editor/src/models/callbacks/html_changed_listener.dart';
 import 'package:rich_editor/src/models/callbacks/loaded_listener.dart';
 import 'package:rich_editor/src/models/enum/command_name.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../models/command_state.dart';
 
 /// A class that handles all editor-related javascript functions
 class JavascriptExecutorBase {
-  InAppWebViewController? _controller;
+  WebViewController? _controller;
 
   String defaultHtml = "";
 
@@ -43,13 +44,13 @@ class JavascriptExecutorBase {
 
   /// Initialise the controller so we don't have to
   /// pass a controller into every Method
-  init(InAppWebViewController? controller) {
+  init(WebViewController? controller) {
     _controller = controller;
   }
 
   /// Run Javascript commands in the editor using the webview controller
   executeJavascript(String command) async {
-    return await _controller!.evaluateJavascript(source: 'editor.$command');
+    return await _controller!.runJavaScript('editor.$command');
   }
 
   String getCachedHtml() {

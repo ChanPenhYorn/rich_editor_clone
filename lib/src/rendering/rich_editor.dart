@@ -1,26 +1,26 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:rich_editor/src/models/enum/bar_position.dart';
 import 'package:rich_editor/src/models/rich_editor_options.dart';
 import 'package:rich_editor/src/services/local_server.dart';
 import 'package:rich_editor/src/utils/javascript_executor_base.dart';
 import 'package:rich_editor/src/widgets/editor_tool_bar.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class RichEditor extends StatefulWidget {
   final String? value;
   final RichEditorOptions? editorOptions;
   final Function(File image)? getImageUrl;
   final Function(File video)? getVideoUrl;
-  final bool? zoom, horizontalScroll;
+  final bool? zoom;
+  final EdgeInsetsGeometry? margin;
   final Decoration? decoration;
   final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
-
   RichEditor({
     Key? key,
     this.value,
@@ -28,9 +28,9 @@ class RichEditor extends StatefulWidget {
     this.getImageUrl,
     this.getVideoUrl,
     this.zoom,
-    this.horizontalScroll,
     this.gestureRecognizers,
     this.decoration,
+    this.margin,
   }) : super(key: key);
 
   @override
@@ -38,21 +38,54 @@ class RichEditor extends StatefulWidget {
 }
 
 class RichEditorState extends State<RichEditor> {
-  InAppWebViewController? _controller;
   final Key _mapKey = UniqueKey();
   String assetPath = 'packages/rich_editor/assets/editor/editor.html';
-
+  WebViewController webCon = WebViewController();
   int port = 5321;
   String html = '';
   LocalServer? localServer;
   JavascriptExecutorBase javascriptExecutor = JavascriptExecutorBase();
-
   @override
   void initState() {
     super.initState();
-    if (!kIsWeb && Platform.isIOS) {
-      _initServer();
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!kIsWeb && Platform.isIOS) {
+        await _initServer();
+        await _loadHtmlFromAssets();
+      } else {
+        webCon = WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setBackgroundColor(const Color(0x00000000))
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onProgress: (int progress) {
+                // Update loading bar.
+              },
+              onPageStarted: (String url) {},
+              onPageFinished: (String url) async {
+                if (url != '') {
+                  javascriptExecutor.init(webCon);
+                  await _setInitialValues();
+                  _addJSListener();
+                }
+              },
+              onWebResourceError: (WebResourceError error) {},
+              onNavigationRequest: (NavigationRequest request) {
+                return NavigationDecision.navigate;
+              },
+            ),
+          )
+          ..loadRequest(
+              Uri.parse('file:///android_asset/flutter_assets/$assetPath'));
+        await webCon.enableZoom(widget.zoom ?? false);
+        await webCon.runJavaScript("""
+              var style = document.createElement('style');
+              style.innerHTML = "img {border:none;max-width: auto; height: auto;object-fit: contain;pointer-events: none;user-select: none; touch-action: none; touch-action: pan-x pan-y;  overflow: hidden;}"
+              document.head.appendChild(style);
+          """);
+        setState(() {});
+      }
+    });
   }
 
   _initServer() async {
@@ -72,9 +105,6 @@ class RichEditorState extends State<RichEditor> {
 
   @override
   void dispose() {
-    if (_controller != null) {
-      _controller = null;
-    }
     if (!kIsWeb && !Platform.isAndroid) {
       localServer!.close();
     }
@@ -83,11 +113,7 @@ class RichEditorState extends State<RichEditor> {
 
   _loadHtmlFromAssets() async {
     final filePath = assetPath;
-    _controller!.loadUrl(
-      urlRequest: URLRequest(
-        url: Uri.tryParse('http://localhost:$port/$filePath'),
-      ),
-    );
+    await webCon.loadRequest(Uri.parse('http://localhost:$port/$filePath'));
   }
 
   var loading = false;
@@ -99,82 +125,30 @@ class RichEditorState extends State<RichEditor> {
           visible: widget.editorOptions!.barPosition == BarPosition.TOP,
           child: _buildToolBar(),
         ),
+        Visibility(
+          visible: widget.editorOptions!.barPosition == BarPosition.CUSTOM,
+          child: _buildToolBar(),
+        ),
         Expanded(
           child: Container(
+            margin: widget.margin,
             decoration: widget.decoration ??
                 BoxDecoration(
                   color: Colors.white,
                 ),
             child: Stack(
               children: [
-                InAppWebView(
-                  key: _mapKey,
-                  onLoadResource: (controller, resource) async {},
-                  onLoadStart: (controller, url) async {},
-                  onWebViewCreated: (controller) async {
-                    await controller.setOptions(
-                        options: InAppWebViewGroupOptions(
-                            android: AndroidInAppWebViewOptions(
-                      builtInZoomControls: false,
-                      displayZoomControls: false,
-                    )));
-                    _controller = controller;
-
-                    setState(() {});
-                    if (!kIsWeb && !Platform.isAndroid) {
-                      await _loadHtmlFromAssets();
-                    } else {
-                      await _controller!.loadUrl(
-                        urlRequest: URLRequest(
-                          url: Uri.tryParse(
-                              'file:///android_asset/flutter_assets/$assetPath'),
-                        ),
-                      );
-                    }
-                  },
-                  initialOptions: InAppWebViewGroupOptions(
-                    crossPlatform: InAppWebViewOptions(
-                      transparentBackground: true,
-                      javaScriptEnabled: true,
-                      useOnLoadResource: true,
-                      clearCache: true,
-                      disableHorizontalScroll: widget.horizontalScroll ?? true,
-                      supportZoom: widget.zoom ?? false,
-                      preferredContentMode: UserPreferredContentMode.MOBILE,
-                    ),
+                Positioned.fill(
+                  child: WebViewWidget(
+                    key: _mapKey,
+                    controller: webCon,
+                    gestureRecognizers: widget.gestureRecognizers ??
+                        [
+                          Factory(() => VerticalDragGestureRecognizer()
+                            ..onUpdate = (_) {}),
+                          Factory(() => HorizontalDragGestureRecognizer()),
+                        ].toSet(),
                   ),
-
-                  onPageCommitVisible: (controller, url) {
-                    controller.evaluateJavascript(source: """
-                var style = document.createElement('style');
-                style.innerHTML = "img {border:none;max-width: auto; height: auto;object-fit: contain;pointer-events: none;user-select: none; touch-action: none; touch-action: pan-x pan-y;  overflow: hidden;}"
-                document.head.appendChild(style);
-            """);
-                  },
-                  onLoadStop: (controller, link) async {
-                    if (link!.path != 'blank') {
-                      javascriptExecutor.init(_controller!);
-                      await _setInitialValues();
-                      _addJSListener();
-                    }
-                  },
-
-                  // javascriptMode: JavascriptMode.unrestricted,
-                  // gestureNavigationEnabled: false,
-                  gestureRecognizers: widget.gestureRecognizers ??
-                      [
-                        Factory(() =>
-                            VerticalDragGestureRecognizer()..onUpdate = (_) {}),
-                        Factory(() => HorizontalDragGestureRecognizer()),
-                      ].toSet(),
-                  onLoadError: (controller, url, code, e) {
-                    print("error $e $code");
-                  },
-                  onConsoleMessage: (controller, consoleMessage) async {
-                    print(
-                      'WebView Message: $consoleMessage',
-                    );
-                  },
                 ),
                 Positioned.fill(
                   child: Visibility(
@@ -198,13 +172,36 @@ class RichEditorState extends State<RichEditor> {
   }
 
   _buildToolBar() {
-    return EditorToolBar(
-      getImageUrl: widget.getImageUrl,
-      getVideoUrl: widget.getVideoUrl,
-      javascriptExecutor: javascriptExecutor,
-      enableVideo: widget.editorOptions!.enableVideo,
-    );
+    if (widget.editorOptions!.barPosition == BarPosition.CUSTOM) {
+      return EditorToolBar(
+        isCustom: true,
+        getImageUrl: widget.getImageUrl,
+        getVideoUrl: widget.getVideoUrl,
+        javascriptExecutor: javascriptExecutor,
+        enableVideo: false,
+        font: _customIcon('text-italic.svg'),
+        italic: _customIcon('text-italic.svg'),
+        bold: _customIcon('text-bold.svg'),
+        insertLink: _customIcon('link.svg'),
+        underLine: _customIcon('text-underline.svg'),
+        alignCenter: _customIcon('textalign-center.svg'),
+        alignLeft: _customIcon('textalign-left.svg'),
+        alignRight: _customIcon('textalign-right.svg'),
+        justify: _customIcon('textalign-justifycenter.svg'),
+      );
+    } else {
+      return EditorToolBar(
+        isCustom: false,
+        getImageUrl: widget.getImageUrl,
+        getVideoUrl: widget.getVideoUrl,
+        javascriptExecutor: javascriptExecutor,
+        enableVideo: widget.editorOptions!.enableVideo,
+      );
+    }
   }
+
+  SvgPicture _customIcon(String icon) =>
+      SvgPicture.asset('../assets/icon/$icon');
 
   _setInitialValues() async {
     if (widget.value != null) await javascriptExecutor.setHtml(widget.value!);
@@ -225,11 +222,11 @@ class RichEditorState extends State<RichEditor> {
   }
 
   _addJSListener() async {
-    _controller!.addJavaScriptHandler(
-        handlerName: 'editor-state-changed-callback://',
-        callback: (c) {
-          print('Callback $c');
-        });
+    // _controller!.addJavaScriptHandler(
+    //     handlerName: 'editor-state-changed-callback://',
+    //     callback: (c) {
+    //       print('Callback $c');
+    //     });
   }
 
   /// Get current HTML from editor
@@ -253,8 +250,7 @@ class RichEditorState extends State<RichEditor> {
 
   /// Clear editor content using Javascript
   clear() {
-    _controller!.evaluateJavascript(
-        source: 'document.getElementById(\'editor\').innerHTML = "";');
+    webCon.runJavaScript('document.getElementById(\'editor\').innerHTML = "";');
   }
 
   /// Focus and Show the keyboard using JavaScript
@@ -276,7 +272,7 @@ class RichEditorState extends State<RichEditor> {
         "    link.media = \"all\";" +
         "    head.appendChild(link);" +
         "}) ();";
-    _controller!.evaluateJavascript(source: jsCSSImport);
+    webCon.runJavaScript(jsCSSImport);
   }
 
   /// if html is equal to html RichTextEditor sets by default at start
