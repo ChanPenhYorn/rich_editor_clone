@@ -88,7 +88,7 @@ class EditorToolBar extends StatelessWidget {
     return Theme(
         data: ThemeData(
             iconTheme: IconThemeData(
-          color: iconColor ?? Colors.black.withOpacity(0.6),
+          color: iconColor ?? Colors.black.withOpacity(0.7),
         )),
         child: isCustom
             ? Column(
@@ -303,13 +303,16 @@ class EditorToolBar extends StatelessWidget {
                       //     await javascriptExecutor.setSubscript();
                       //   },
                       // ),
-                      // TabButton(
-                      //   tooltip: 'Clear format',
-                      //   icon: Icon(Icons.format_clear,),
-                      //   onTap: () async {
-                      //     await javascriptExecutor.removeFormat();
-                      //   },
-                      // ),
+                      TabButton(
+                        tooltip: 'Clear format',
+                        icon: clearFormat ??
+                            Icon(
+                              Icons.format_clear,
+                            ),
+                        onTap: () async {
+                          await javascriptExecutor.removeFormat();
+                        },
+                      ),
                       TabButton(
                         tooltip: 'Undo',
                         icon: undo ??
@@ -641,13 +644,16 @@ class EditorToolBar extends StatelessWidget {
                           //     await javascriptExecutor.setSubscript();
                           //   },
                           // ),
-                          // TabButton(
-                          //   tooltip: 'Clear format',
-                          //   icon: Icon(Icons.format_clear,),
-                          //   onTap: () async {
-                          //     await javascriptExecutor.removeFormat();
-                          //   },
-                          // ),
+                          TabButton(
+                            tooltip: 'Clear format',
+                            icon: clearFormat ??
+                                Icon(
+                                  Icons.format_clear,
+                                ),
+                            onTap: () async {
+                              await javascriptExecutor.removeFormat();
+                            },
+                          ),
                           TabButton(
                             tooltip: 'Undo',
                             icon: undo ??
