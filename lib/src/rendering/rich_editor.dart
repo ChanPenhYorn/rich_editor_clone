@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:rich_editor/src/models/enum/bar_position.dart';
 import 'package:rich_editor/src/models/rich_editor_options.dart';
 import 'package:rich_editor/src/services/local_server.dart';
@@ -17,20 +16,68 @@ class RichEditor extends StatefulWidget {
   final RichEditorOptions? editorOptions;
   final Function(File image)? getImageUrl;
   final Function(File video)? getVideoUrl;
-  final bool? zoom;
+  final Color? iconColor;
   final EdgeInsetsGeometry? margin;
   final Decoration? decoration;
   final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
+  final double imageRaduis;
+  final String? javaScript;
+  final Widget? customLoading;
+  final Widget? video,
+      image,
+      bold,
+      italic,
+      insertLink,
+      insertImage,
+      underLine,
+      strikeThrough,
+      superSubscript,
+      subScript,
+      clearFormat,
+      undo,
+      redo,
+      font,
+      fontSize,
+      alignLeft,
+      alignRight,
+      alignCenter,
+      justifyLeft,
+      justifyRight,
+      justify;
   RichEditor({
     Key? key,
     this.value,
     this.editorOptions,
     this.getImageUrl,
     this.getVideoUrl,
-    this.zoom,
     this.gestureRecognizers,
     this.decoration,
     this.margin,
+    this.iconColor,
+    this.video,
+    this.image,
+    this.bold,
+    this.italic,
+    this.insertLink,
+    this.insertImage,
+    this.underLine,
+    this.strikeThrough,
+    this.superSubscript,
+    this.subScript,
+    this.clearFormat,
+    this.undo,
+    this.redo,
+    this.font,
+    this.fontSize,
+    this.alignLeft,
+    this.alignRight,
+    this.alignCenter,
+    this.justifyLeft,
+    this.justifyRight,
+    this.justify,
+    this.imageRaduis = 5,
+    this.javaScript,
+    this.customLoading,
   }) : super(key: key);
 
   @override
@@ -53,39 +100,46 @@ class RichEditorState extends State<RichEditor> {
         await _initServer();
         await _loadHtmlFromAssets();
       } else {
-        webCon = WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setBackgroundColor(const Color(0x00000000))
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onProgress: (int progress) {
-                // Update loading bar.
-              },
-              onPageStarted: (String url) {},
-              onPageFinished: (String url) async {
-                if (url != '') {
-                  javascriptExecutor.init(webCon);
-                  await _setInitialValues();
-                  _addJSListener();
-                }
-              },
-              onWebResourceError: (WebResourceError error) {},
-              onNavigationRequest: (NavigationRequest request) {
-                return NavigationDecision.navigate;
-              },
-            ),
-          )
-          ..loadRequest(
-              Uri.parse('file:///android_asset/flutter_assets/$assetPath'));
-        await webCon.enableZoom(widget.zoom ?? false);
-        await webCon.runJavaScript("""
-              var style = document.createElement('style');
-              style.innerHTML = "img {border:none;max-width: auto; height: auto;object-fit: contain;pointer-events: none;user-select: none; touch-action: none; touch-action: pan-x pan-y;  overflow: hidden;}"
-              document.head.appendChild(style);
-          """);
+        _initWebView('file:///android_asset/flutter_assets/$assetPath');
         setState(() {});
       }
     });
+  }
+
+  void _initWebView(String url) {
+    webCon = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..enableZoom(false)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {},
+          onPageStarted: (String url) {
+            setState(() {
+              loading = true;
+            });
+          },
+          onPageFinished: (String url) async {
+            await Future.delayed(
+              const Duration(milliseconds: 800),
+              () {},
+            );
+            setState(() {
+              loading = false;
+            });
+            if (url != '') {
+              javascriptExecutor.init(webCon);
+              await _setInitialValues();
+              _addJSListener();
+            }
+          },
+          onWebResourceError: (WebResourceError error) {},
+          onNavigationRequest: (NavigationRequest request) {
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(url));
   }
 
   _initServer() async {
@@ -113,32 +167,33 @@ class RichEditorState extends State<RichEditor> {
 
   _loadHtmlFromAssets() async {
     final filePath = assetPath;
-    await webCon.loadRequest(Uri.parse('http://localhost:$port/$filePath'));
+    _initWebView('http://localhost:$port/$filePath');
   }
 
   var loading = false;
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        Visibility(
-          visible: widget.editorOptions!.barPosition == BarPosition.TOP,
-          child: _buildToolBar(),
-        ),
-        Visibility(
-          visible: widget.editorOptions!.barPosition == BarPosition.CUSTOM,
-          child: _buildToolBar(),
-        ),
-        Expanded(
-          child: Container(
-            margin: widget.margin,
-            decoration: widget.decoration ??
-                BoxDecoration(
-                  color: Colors.white,
-                ),
-            child: Stack(
-              children: [
-                Positioned.fill(
+        Positioned.fill(
+          child: Column(
+            children: [
+              Visibility(
+                visible: widget.editorOptions!.barPosition == BarPosition.TOP,
+                child: _buildToolBar(),
+              ),
+              Visibility(
+                visible:
+                    widget.editorOptions!.barPosition == BarPosition.CUSTOM,
+                child: _buildToolBar(),
+              ),
+              Expanded(
+                child: Container(
+                  margin: widget.margin,
+                  decoration: widget.decoration ??
+                      BoxDecoration(
+                        color: Colors.white,
+                      ),
                   child: WebViewWidget(
                     key: _mapKey,
                     controller: webCon,
@@ -150,22 +205,25 @@ class RichEditorState extends State<RichEditor> {
                         ].toSet(),
                   ),
                 ),
-                Positioned.fill(
-                  child: Visibility(
-                    visible: loading,
-                    child: Center(
-                        child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                    )),
-                  ),
-                )
-              ],
-            ),
+              ),
+              Visibility(
+                visible:
+                    widget.editorOptions!.barPosition == BarPosition.BOTTOM,
+                child: _buildToolBar(),
+              ),
+            ],
           ),
         ),
-        Visibility(
-          visible: widget.editorOptions!.barPosition == BarPosition.BOTTOM,
-          child: _buildToolBar(),
+        Positioned.fill(
+          child: Visibility(
+            visible: loading,
+            child: widget.customLoading ??
+                Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                  ),
+                ),
+          ),
         ),
       ],
     );
@@ -175,35 +233,62 @@ class RichEditorState extends State<RichEditor> {
     if (widget.editorOptions!.barPosition == BarPosition.CUSTOM) {
       return EditorToolBar(
         isCustom: true,
+        iconColor: widget.iconColor,
         getImageUrl: widget.getImageUrl,
         getVideoUrl: widget.getVideoUrl,
         javascriptExecutor: javascriptExecutor,
         enableVideo: false,
-        font: _customIcon('text-italic.svg'),
-        italic: _customIcon('text-italic.svg'),
-        bold: _customIcon('text-bold.svg'),
-        insertLink: _customIcon('link.svg'),
-        underLine: _customIcon('text-underline.svg'),
-        alignCenter: _customIcon('textalign-center.svg'),
-        alignLeft: _customIcon('textalign-left.svg'),
-        alignRight: _customIcon('textalign-right.svg'),
-        justify: _customIcon('textalign-justifycenter.svg'),
+        font: widget.font,
+        italic: widget.italic,
+        bold: widget.bold,
+        insertLink: widget.insertLink,
+        underLine: widget.underLine,
+        alignCenter: widget.alignCenter,
+        alignLeft: widget.alignLeft,
+        alignRight: widget.alignRight,
+        justify: widget.justify,
+        redo: widget.redo,
+        undo: widget.undo,
+        insertImage: widget.insertImage,
+        fontSize: widget.fontSize,
+        clearFormat: widget.clearFormat,
+        strikeThrough: widget.strikeThrough,
       );
     } else {
       return EditorToolBar(
         isCustom: false,
+        iconColor: widget.iconColor,
         getImageUrl: widget.getImageUrl,
         getVideoUrl: widget.getVideoUrl,
         javascriptExecutor: javascriptExecutor,
         enableVideo: widget.editorOptions!.enableVideo,
+        font: widget.font,
+        italic: widget.italic,
+        bold: widget.bold,
+        insertLink: widget.insertLink,
+        underLine: widget.underLine,
+        alignCenter: widget.alignCenter,
+        alignLeft: widget.alignLeft,
+        alignRight: widget.alignRight,
+        justify: widget.justify,
+        redo: widget.redo,
+        undo: widget.undo,
+        insertImage: widget.insertImage,
+        fontSize: widget.fontSize,
+        clearFormat: widget.clearFormat,
+        strikeThrough: widget.strikeThrough,
       );
     }
   }
 
-  SvgPicture _customIcon(String icon) =>
-      SvgPicture.asset('../assets/icon/$icon');
-
   _setInitialValues() async {
+    await webCon.runJavaScript('''var style = document.createElement('style');
+              style.innerHTML = "img{ max-width: auto; height: auto; object-fit: contain; pointer-events: none; user-select: none;touch-action: none;overflow: hidden; border: none;border-radius: ${widget.imageRaduis}px;}"
+              document.head.appendChild(style);
+         ''');
+    if (widget.javaScript != null) {
+      await webCon.runJavaScript(widget.javaScript!);
+    }
     if (widget.value != null) await javascriptExecutor.setHtml(widget.value!);
     if (widget.editorOptions!.padding != null)
       await javascriptExecutor.setPadding(widget.editorOptions!.padding!);

@@ -61,7 +61,7 @@ class BasicDemo extends StatelessWidget {
       body: RichEditor(
         key: keyEditor,
         value: '''
-      
+<p><img src=\"http://192.168.90.34:3000/assets/source/98/scaled_1000001587.jpg\" width=\"0\" height=\"0\" data-x=\"0\" data-y=\"0\" style=\"width: 374.314px; height: 582.19px;\"><br></p><p><img src=\"http://192.168.90.34:3000/assets/source/a1/scaled_1000004626__02.png\" width=\"600\" height=\"600\"><br></p><p><a href=\"https://www.youtube.com\">click on link to view YouTube&nbsp;</a><br></p><blockquote><span style=\"color: rgb(33, 243, 158);\">Yes<span style=\"font-size: xx-large; font-family: serif;\">gh</span></span></blockquote>
         ''', // initial HTML data
         editorOptions: RichEditorOptions(
           placeholder: 'Start typing',
