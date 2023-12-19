@@ -43,6 +43,9 @@ class RichEditor extends StatefulWidget {
       alignCenter,
       justifyLeft,
       justifyRight,
+      bulletList,
+      numList,
+      checkBox,
       justify;
   RichEditor({
     Key? key,
@@ -78,6 +81,9 @@ class RichEditor extends StatefulWidget {
     this.imageRaduis = 5,
     this.javaScript,
     this.customLoading,
+    this.bulletList,
+    this.numList,
+    this.checkBox,
   }) : super(key: key);
 
   @override
@@ -218,7 +224,9 @@ class RichEditorState extends State<RichEditor> {
           child: Visibility(
             visible: loading,
             child: widget.customLoading ??
-                Center(
+                Container(
+                  color: Colors.transparent,
+                  alignment: Alignment.center,
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
                   ),
@@ -249,10 +257,14 @@ class RichEditorState extends State<RichEditor> {
         justify: widget.justify,
         redo: widget.redo,
         undo: widget.undo,
+        image: widget.image,
         insertImage: widget.insertImage,
         fontSize: widget.fontSize,
         clearFormat: widget.clearFormat,
         strikeThrough: widget.strikeThrough,
+        numList: widget.numList,
+        bulletList: widget.bulletList,
+        checkBox: widget.checkBox,
       );
     } else {
       return EditorToolBar(
@@ -272,11 +284,15 @@ class RichEditorState extends State<RichEditor> {
         alignRight: widget.alignRight,
         justify: widget.justify,
         redo: widget.redo,
+        image: widget.image,
         undo: widget.undo,
         insertImage: widget.insertImage,
         fontSize: widget.fontSize,
         clearFormat: widget.clearFormat,
         strikeThrough: widget.strikeThrough,
+        numList: widget.numList,
+        bulletList: widget.bulletList,
+        checkBox: widget.checkBox,
       );
     }
   }
