@@ -728,21 +728,22 @@ class EditorToolBar extends StatelessWidget {
                           ),
                           TabButton(
                             tooltip: 'Bullet List',
-                            icon: Icon(Icons.format_list_bulleted),
+                            icon:
+                                bulletList ?? Icon(Icons.format_list_bulleted),
                             onTap: () async {
                               await javascriptExecutor.insertBulletList();
                             },
                           ),
                           TabButton(
                             tooltip: 'Numbered List',
-                            icon: Icon(Icons.format_list_numbered),
+                            icon: numList ?? Icon(Icons.format_list_numbered),
                             onTap: () async {
                               await javascriptExecutor.insertNumberedList();
                             },
                           ),
                           TabButton(
                             tooltip: 'Checkbox',
-                            icon: Icon(Icons.check_box_outlined),
+                            icon: checkBox ?? Icon(Icons.check_box_outlined),
                             onTap: () async {
                               var text = await showDialog(
                                 context: context,
