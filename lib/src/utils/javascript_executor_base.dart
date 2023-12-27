@@ -66,8 +66,9 @@ class JavascriptExecutorBase {
 
   /// Get current HTML data from Editor
   getCurrentHtml() async {
-    String? html = await executeJavascript('getEncodedHtml();');
-    String? decodedHtml = decodeHtml(html!);
+    String? html = await _controller!
+        .runJavaScriptReturningResult('editor.getEncodedHtml();') as String;
+    String? decodedHtml = decodeHtml(html);
     if (decodedHtml!.startsWith('"') && decodedHtml.endsWith('"')) {
       decodedHtml = decodedHtml.substring(1, decodedHtml.length - 1);
     }

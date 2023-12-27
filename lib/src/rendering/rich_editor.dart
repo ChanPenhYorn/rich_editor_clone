@@ -334,7 +334,9 @@ class RichEditorState extends State<RichEditor> {
   Future<String?> getHtml() async {
     try {
       html = await javascriptExecutor.getCurrentHtml();
-    } catch (e) {}
+    } catch (e) {
+      debugPrint("Error getting current HTML $e");
+    }
     return html;
   }
 
