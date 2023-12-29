@@ -16,7 +16,7 @@ class RichEditor extends StatefulWidget {
   final RichEditorOptions? editorOptions;
   final Function(File image)? getImageUrl;
   final Function(File video)? getVideoUrl;
-  final Color? iconColor;
+  final Color? iconColor, bgColor;
   final EdgeInsetsGeometry? margin;
   final Decoration? decoration;
   final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
@@ -84,6 +84,7 @@ class RichEditor extends StatefulWidget {
     this.bulletList,
     this.numList,
     this.checkBox,
+    this.bgColor,
   }) : super(key: key);
 
   @override
@@ -114,8 +115,11 @@ class RichEditorState extends State<RichEditor> {
 
   void _initWebView(String url) {
     webCon = WebViewController()
+      ..clearCache()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
+      ..setBackgroundColor(
+        widget.bgColor ?? Theme.of(context).scaffoldBackgroundColor,
+      )
       ..enableZoom(false)
       ..setNavigationDelegate(
         NavigationDelegate(
@@ -126,10 +130,6 @@ class RichEditorState extends State<RichEditor> {
             });
           },
           onPageFinished: (String url) async {
-            await Future.delayed(
-              const Duration(milliseconds: 800),
-              () {},
-            );
             setState(() {
               loading = false;
             });
@@ -382,7 +382,7 @@ class RichEditorState extends State<RichEditor> {
   /// (<p>​</p>) so that RichTextEditor can be considered as 'empty'.
   Future<bool> isEmpty() async {
     html = await javascriptExecutor.getCurrentHtml();
-    return html == '<p>​</p>';
+    return html == '';
   }
 
   /// Enable Editing (If editing is disabled)
