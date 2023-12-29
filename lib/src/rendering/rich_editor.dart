@@ -165,7 +165,7 @@ class RichEditorState extends State<RichEditor> {
 
   @override
   void dispose() {
-    if (!kIsWeb && !Platform.isAndroid) {
+    if (!kIsWeb && Platform.isIOS) {
       localServer!.close();
     }
     super.dispose();
