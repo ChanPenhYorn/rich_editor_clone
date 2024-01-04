@@ -344,7 +344,7 @@ class JavascriptExecutorBase {
   }
 
   decodeHtml(String html) {
-    return Uri.encodeQueryComponent(html);
+    return Uri.decodeFull(html);
   }
 
   encodeHtml(String html) {
