@@ -523,9 +523,9 @@ var editor = {
 
         document.execCommand('insertHTML', false, html);
 
-        if(this._isImageResizingEnabled) {
-            this.makeImagesResizeable();
-        }
+        // if(this._isImageResizingEnabled) {
+        //     this.makeImagesResizeable();
+        // }
 
         this._updateEditorState();
     },
@@ -584,12 +584,13 @@ var editor = {
     setInputEnabled: function(inputEnabled) {
         this._textField.contentEditable = String(inputEnabled);
 
-        if(inputEnabled) { // TODO: may interferes with _isImageResizingEnabled
-            this.makeImagesResizeable();
-        }
-        else {
-            this.disableImageResizing();
-        }
+        // if(inputEnabled) { // TODO: may interferes with _isImageResizingEnabled
+        //     this.makeImagesResizeable();
+        // }
+        // else {
+        //     this.disableImageResizing();
+        // }
+        this.disableImageResizing();
     },
 
     focus: function() {

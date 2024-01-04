@@ -1,6 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:rich_editor/src/extensions/extensions.dart';
 import 'package:rich_editor/src/models/callbacks/did_html_change_listener.dart';
 import 'package:rich_editor/src/models/callbacks/html_changed_listener.dart';
@@ -50,7 +51,7 @@ class JavascriptExecutorBase {
 
   /// Run Javascript commands in the editor using the webview controller
   executeJavascript(String command) async {
-    return await _controller!.runJavaScript('editor.$command');
+    return await _controller!.runJavaScriptReturningResult('editor.$command');
   }
 
   String getCachedHtml() {
@@ -60,6 +61,13 @@ class JavascriptExecutorBase {
   /// Display HTML data in editor
   setHtml(String html) async {
     String? baseUrl;
+
+    String exampleString =
+        '''This is a string with a single quote: a'b asdf      f''';
+    var a = encodeHtml(html);
+    var b = decodeHtml(a);
+    log("Code : $a");
+    log("Code : $b");
     await executeJavascript("setHtml('" + encodeHtml(html) + "', '$baseUrl');");
     htmlField = html;
   }
@@ -336,11 +344,11 @@ class JavascriptExecutorBase {
   }
 
   decodeHtml(String html) {
-    return Uri.decodeFull(html);
+    return Uri.encodeQueryComponent(html);
   }
 
   encodeHtml(String html) {
-    return Uri.encodeFull(html);
+    return Uri.encodeQueryComponent(html);
   }
 
 // bool shouldOverrideUrlLoading(String url) {
