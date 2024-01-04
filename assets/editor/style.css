@@ -25,12 +25,6 @@ body {
   overflow: scroll;
   display: table;
   table-layout: fixed;
-   /* Disable user scaling */
-   touch-action: none;
-   user-select: none;
-   /* For older browsers */
-   -ms-content-zooming: none;
-   zoom: 1;
   width: 100%;
   min-height:100%;
 }
