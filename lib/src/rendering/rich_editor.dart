@@ -299,7 +299,7 @@ class RichEditorState extends State<RichEditor> {
 
   _setInitialValues() async {
     await webCon.runJavaScript('''var style = document.createElement('style');
-              style.innerHTML = "img{ max-width: auto; height: auto; object-fit: contain; pointer-events: none; user-select: none;touch-action: none;overflow: hidden; border: none;border-radius: ${widget.imageRaduis}px;}"
+              style.innerHTML = "img{ width: auto;height: auto;pointer-events: none; user-select: none;touch-action: none;overflow: hidden; border: none;border-radius: ${widget.imageRaduis}px;}"
               document.head.appendChild(style);
          ''');
     if (widget.javaScript != null) {

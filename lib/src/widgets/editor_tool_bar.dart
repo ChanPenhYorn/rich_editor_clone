@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:rich_editor/src/utils/javascript_executor_base.dart';
-import 'package:rich_editor/src/widgets/check_dialog.dart';
 import 'package:rich_editor/src/widgets/insert_image_dialog.dart';
 import 'package:rich_editor/src/widgets/insert_link_dialog.dart';
 import 'package:rich_editor/src/widgets/tab_button.dart';
@@ -398,20 +397,20 @@ class EditorToolBar extends StatelessWidget {
                           await javascriptExecutor.insertNumberedList();
                         },
                       ),
-                      TabButton(
-                        tooltip: 'Checkbox',
-                        icon: checkBox ?? Icon(Icons.check_box_outlined),
-                        onTap: () async {
-                          var text = await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return CheckDialog();
-                            },
-                          );
-                          if (text != null)
-                            await javascriptExecutor.insertCheckbox(text);
-                        },
-                      ),
+                      // TabButton(
+                      //   tooltip: 'Checkbox',
+                      //   icon: checkBox ?? Icon(Icons.check_box_outlined),
+                      //   onTap: () async {
+                      //     var text = await showDialog(
+                      //       context: context,
+                      //       builder: (BuildContext context) {
+                      //         return CheckDialog();
+                      //       },
+                      //     );
+                      //     if (text != null)
+                      //       await javascriptExecutor.insertCheckbox(text);
+                      //   },
+                      // ),
 
                       /// TODO: Implement Search feature
                       // TabButton(
@@ -741,20 +740,20 @@ class EditorToolBar extends StatelessWidget {
                               await javascriptExecutor.insertNumberedList();
                             },
                           ),
-                          TabButton(
-                            tooltip: 'Checkbox',
-                            icon: checkBox ?? Icon(Icons.check_box_outlined),
-                            onTap: () async {
-                              var text = await showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return CheckDialog();
-                                },
-                              );
-                              if (text != null)
-                                await javascriptExecutor.insertCheckbox(text);
-                            },
-                          ),
+                          // TabButton(
+                          //   tooltip: 'Checkbox',
+                          //   icon: checkBox ?? Icon(Icons.check_box_outlined),
+                          //   onTap: () async {
+                          //     var text = await showDialog(
+                          //       context: context,
+                          //       builder: (BuildContext context) {
+                          //         return CheckDialog();
+                          //       },
+                          //     );
+                          //     if (text != null)
+                          //       await javascriptExecutor.insertCheckbox(text);
+                          //   },
+                          // ),
 
                           /// TODO: Implement Search feature
                           // TabButton(

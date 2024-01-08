@@ -17,45 +17,56 @@ class _InsertImageDialogState extends State<InsertImageDialog> {
 
   TextEditingController alt = TextEditingController();
   bool picked = false;
-
+  final _key = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return CustomDialogTemplate(
-      body: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(widget.isVideo ? 'Video link' : 'Image link'),
-            ElevatedButton(
-              onPressed: () => getImage(),
-              child: Text('...'),
-            ),
-          ],
-        ),
-        TextFormField(
-          controller: link,
-          decoration: InputDecoration(hintText: 'https://...', isDense: true),
-        ),
-        Visibility(
-          visible: !widget.isVideo,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Form(
+      key: _key,
+      child: CustomDialogTemplate(
+        body: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(height: 20.0),
-              Text('Alt text (optional)'),
-              TextFormField(
-                controller: alt,
-                decoration: InputDecoration(
-                  hintText: 'optional',
-                ),
+              Text(widget.isVideo ? 'Video link' : 'Image link'),
+              ElevatedButton(
+                onPressed: () => getImage(),
+                child: Text('...'),
               ),
             ],
           ),
-        ),
-      ],
-      onDone: () => Navigator.pop(context, [link.text, alt.text, picked]),
-      onCancel: () => Navigator.pop(context),
+          TextFormField(
+            controller: link,
+            validator: (value) {
+              return "Please input link image";
+            },
+            decoration: InputDecoration(hintText: 'https://...', isDense: true),
+          ),
+          Visibility(
+            visible: !widget.isVideo,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 20.0),
+                Text('Alt text (optional)'),
+                TextFormField(
+                  controller: alt,
+                  decoration: InputDecoration(
+                    hintText: 'optional',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+        onDone: () {
+          _key.currentState!.validate();
+          if (link.text.trim().isNotEmpty) {
+            Navigator.pop(context, [link.text, alt.text, picked]);
+          }
+        },
+        onCancel: () => Navigator.pop(context),
+      ),
     );
   }
 
