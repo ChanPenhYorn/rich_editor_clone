@@ -13,7 +13,7 @@ import '../models/command_state.dart';
 
 /// A class that handles all editor-related javascript functions
 class JavascriptExecutorBase {
-  WebViewController? _controller;
+  WebViewController _controller = WebViewController();
 
   String defaultHtml = "";
 
@@ -45,13 +45,13 @@ class JavascriptExecutorBase {
 
   /// Initialise the controller so we don't have to
   /// pass a controller into every Method
-  init(WebViewController? controller) {
+  init(WebViewController controller) {
     _controller = controller;
   }
 
   /// Run Javascript commands in the editor using the webview controller
   executeJavascript(String command) async {
-    return await _controller!.runJavaScriptReturningResult('editor.$command');
+    return await _controller.runJavaScriptReturningResult('editor.$command');
   }
 
   String getCachedHtml() {
@@ -62,8 +62,6 @@ class JavascriptExecutorBase {
   setHtml(String html) async {
     String? baseUrl;
 
-    String exampleString =
-        '''This is a string with a single quote: a'b asdf      f''';
     var a = encodeHtml(html);
     var b = decodeHtml(a);
     log("Code : $a");
@@ -74,7 +72,7 @@ class JavascriptExecutorBase {
 
   /// Get current HTML data from Editor
   getCurrentHtml() async {
-    String? html = await _controller!
+    String? html = await _controller
         .runJavaScriptReturningResult('editor.getEncodedHtml();') as String;
     String? decodedHtml = decodeHtml(html);
     if (decodedHtml!.startsWith('"') && decodedHtml.endsWith('"')) {
