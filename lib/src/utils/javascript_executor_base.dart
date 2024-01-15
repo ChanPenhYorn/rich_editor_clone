@@ -2,18 +2,18 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:rich_editor/src/extensions/extensions.dart';
 import 'package:rich_editor/src/models/callbacks/did_html_change_listener.dart';
 import 'package:rich_editor/src/models/callbacks/html_changed_listener.dart';
 import 'package:rich_editor/src/models/callbacks/loaded_listener.dart';
 import 'package:rich_editor/src/models/enum/command_name.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import '../models/command_state.dart';
 
 /// A class that handles all editor-related javascript functions
 class JavascriptExecutorBase {
-  WebViewController _controller = WebViewController();
+  InAppWebViewController? _controller;
 
   String defaultHtml = "";
 
@@ -45,13 +45,13 @@ class JavascriptExecutorBase {
 
   /// Initialise the controller so we don't have to
   /// pass a controller into every Method
-  init(WebViewController controller) {
+  init(InAppWebViewController controller) {
     _controller = controller;
   }
 
   /// Run Javascript commands in the editor using the webview controller
   executeJavascript(String command) async {
-    return await _controller.runJavaScriptReturningResult('editor.$command');
+    return await _controller!.evaluateJavascript(source: 'editor.$command');
   }
 
   String getCachedHtml() {
@@ -72,8 +72,8 @@ class JavascriptExecutorBase {
 
   /// Get current HTML data from Editor
   getCurrentHtml() async {
-    String? html = await _controller
-        .runJavaScriptReturningResult('editor.getEncodedHtml();') as String;
+    String? html = await _controller!
+        .evaluateJavascript(source: 'editor.getEncodedHtml();') as String;
     String? decodedHtml = decodeHtml(html);
     if (decodedHtml!.startsWith('"') && decodedHtml.endsWith('"')) {
       decodedHtml = decodedHtml.substring(1, decodedHtml.length - 1);

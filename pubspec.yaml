@@ -17,9 +17,6 @@ dependencies:
   flutter_colorpicker: ^1.0.3
   path: ^1.8.2
   xml2json: ^5.3.6
-  webview_flutter: ^4.4.2
-  flutter_svg: ^2.0.9
-  webview_flutter_android: ^3.13.1
 
 dev_dependencies:
   flutter_test:

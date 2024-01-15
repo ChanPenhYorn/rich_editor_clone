@@ -19,7 +19,7 @@ class InsertLinkDialog extends StatelessWidget {
               return "Please input link";
             },
             decoration: InputDecoration(
-              hintText: 'type link here',
+              hintText: 'https://...',
             ),
           ),
           SizedBox(height: 20.0),

@@ -1,3 +1,4 @@
+/*
 import 'dart:async';
 import 'dart:io';
 
@@ -9,7 +10,7 @@ import 'package:rich_editor/src/models/rich_editor_options.dart';
 import 'package:rich_editor/src/services/local_server.dart';
 import 'package:rich_editor/src/utils/javascript_executor_base.dart';
 import 'package:rich_editor/src/widgets/editor_tool_bar.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class RichEditor extends StatefulWidget {
   final String? value;
@@ -94,18 +95,62 @@ class RichEditor extends StatefulWidget {
 class RichEditorState extends State<RichEditor> {
   final Key _mapKey = UniqueKey();
   String assetPath = 'packages/rich_editor/assets/editor/editor.html';
-  InAppWebViewController? _controller;
+  WebViewController webCon = WebViewController();
   int port = 5321;
   String html = '';
   LocalServer? localServer;
   JavascriptExecutorBase javascriptExecutor = JavascriptExecutorBase();
-
   @override
   void initState() {
     super.initState();
-    if (!kIsWeb && Platform.isIOS) {
-      _initServer();
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!kIsWeb && Platform.isIOS) {
+        await _initServer();
+        await _loadHtmlFromAssets();
+      } else {
+        _initWebView('file:///android_asset/flutter_assets/$assetPath');
+        setState(() {});
+      }
+    });
+  }
+
+  void _initWebView(String url) {
+    webCon = WebViewController()
+      ..clearCache()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(
+        widget.bgColor ?? Theme.of(context).scaffoldBackgroundColor,
+      )
+      ..enableZoom(false)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {},
+          onPageStarted: (String url) {
+            setState(() {
+              loading = true;
+            });
+          },
+          onPageFinished: (String url) async {
+            setState(() {
+              loading = false;
+            });
+            if (url != '') {
+              javascriptExecutor.init(webCon);
+              debugPrint('Page finished loading: $url');
+              var result = await webCon
+                  .runJavaScriptReturningResult('yourJavascriptFunction()');
+              print('JavaScript function result: $result');
+              // await _setInitialValues();
+              _addJSListener();
+            }
+          },
+          onWebResourceError: (WebResourceError error) {},
+          onNavigationRequest: (NavigationRequest request) {
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(url));
   }
 
   _initServer() async {
@@ -125,10 +170,7 @@ class RichEditorState extends State<RichEditor> {
 
   @override
   void dispose() {
-    if (_controller != null) {
-      _controller = null;
-    }
-    if (!kIsWeb && !Platform.isAndroid) {
+    if (!kIsWeb && Platform.isIOS) {
       localServer!.close();
     }
     super.dispose();
@@ -136,11 +178,7 @@ class RichEditorState extends State<RichEditor> {
 
   _loadHtmlFromAssets() async {
     final filePath = assetPath;
-    _controller!.loadUrl(
-      urlRequest: URLRequest(
-        url: Uri.tryParse('http://localhost:$port/$filePath'),
-      ),
-    );
+    _initWebView('http://localhost:$port/$filePath');
   }
 
   var loading = false;
@@ -167,39 +205,9 @@ class RichEditorState extends State<RichEditor> {
                       BoxDecoration(
                         color: Colors.white,
                       ),
-                  child: InAppWebView(
+                  child: WebViewWidget(
                     key: _mapKey,
-                    initialOptions: InAppWebViewGroupOptions(
-                      crossPlatform: InAppWebViewOptions(
-                        supportZoom: false,
-                      ),
-                    ),
-                    onWebViewCreated: (controller) async {
-                      _controller = controller;
-                      setState(() {
-                        loading = true;
-                      });
-                      if (!kIsWeb && !Platform.isAndroid) {
-                        await _loadHtmlFromAssets();
-                      } else {
-                        await _controller!.loadUrl(
-                          urlRequest: URLRequest(
-                            url: Uri.tryParse(
-                                'file:///android_asset/flutter_assets/$assetPath'),
-                          ),
-                        );
-                      }
-                    },
-                    onLoadStop: (controller, link) async {
-                      if (link!.path != 'blank') {
-                        javascriptExecutor.init(_controller!);
-                        await _setInitialValues();
-                        _addJSListener();
-                      }
-                      setState(() {
-                        loading = false;
-                      });
-                    },
+                    controller: webCon,
                     gestureRecognizers: widget.gestureRecognizers ??
                         [
                           Factory(() => VerticalDragGestureRecognizer()
@@ -294,60 +302,38 @@ class RichEditorState extends State<RichEditor> {
     }
   }
 
-  // _setInitialValues() async {
-  //   await webCon.runJavaScript('''var style = document.createElement('style');
-  //             style.innerHTML = "img{ width: auto;height: auto;pointer-events: none; user-select: none;touch-action: none;overflow: hidden; border: none;border-radius: ${widget.imageRaduis}px;}"
-  //             document.head.appendChild(style);
-  //        ''');
-  //   if (widget.javaScript != null) {
-  //     await _controller.runJavaScript(widget.javaScript!);
-  //   }
-
-  //   // if (widget.value != null) await javascriptExecutor.setHtml(widget.value!);
-  //   // if (widget.editorOptions!.padding != null)
-  //   //   await javascriptExecutor.setPadding(widget.editorOptions!.padding!);
-  //   // if (widget.editorOptions!.backgroundColor != null)
-  //   //   await javascriptExecutor
-  //   //       .setBackgroundColor(widget.editorOptions!.backgroundColor!);
-  //   // if (widget.editorOptions!.baseTextColor != null)
-  //   //   await javascriptExecutor
-  //   //       .setBaseTextColor(widget.editorOptions!.baseTextColor!);
-  //   // if (widget.editorOptions!.placeholder != null)
-  //   //   await javascriptExecutor
-  //   //       .setPlaceholder(widget.editorOptions!.placeholder!);
-  //   // if (widget.editorOptions!.baseFontFamily != null)
-  //   //   await javascriptExecutor
-  //   //       .setBaseFontFamily(widget.editorOptions!.baseFontFamily!);
-  // }
   _setInitialValues() async {
-    _controller!.evaluateJavascript(
-        source: '''var style = document.createElement('style');
+    await webCon.runJavaScript('''var style = document.createElement('style');
               style.innerHTML = "img{ width: auto;height: auto;pointer-events: none; user-select: none;touch-action: none;overflow: hidden; border: none;border-radius: ${widget.imageRaduis}px;}"
               document.head.appendChild(style);
          ''');
-    if (widget.value != null) await javascriptExecutor.setHtml(widget.value!);
-    if (widget.editorOptions!.padding != null)
-      await javascriptExecutor.setPadding(widget.editorOptions!.padding!);
-    if (widget.editorOptions!.backgroundColor != null)
-      await javascriptExecutor
-          .setBackgroundColor(widget.editorOptions!.backgroundColor!);
-    if (widget.editorOptions!.baseTextColor != null)
-      await javascriptExecutor
-          .setBaseTextColor(widget.editorOptions!.baseTextColor!);
-    if (widget.editorOptions!.placeholder != null)
-      await javascriptExecutor
-          .setPlaceholder(widget.editorOptions!.placeholder!);
-    if (widget.editorOptions!.baseFontFamily != null)
-      await javascriptExecutor
-          .setBaseFontFamily(widget.editorOptions!.baseFontFamily!);
+    if (widget.javaScript != null) {
+      await webCon.runJavaScript(widget.javaScript!);
+    }
+
+    // if (widget.value != null) await javascriptExecutor.setHtml(widget.value!);
+    // if (widget.editorOptions!.padding != null)
+    //   await javascriptExecutor.setPadding(widget.editorOptions!.padding!);
+    // if (widget.editorOptions!.backgroundColor != null)
+    //   await javascriptExecutor
+    //       .setBackgroundColor(widget.editorOptions!.backgroundColor!);
+    // if (widget.editorOptions!.baseTextColor != null)
+    //   await javascriptExecutor
+    //       .setBaseTextColor(widget.editorOptions!.baseTextColor!);
+    // if (widget.editorOptions!.placeholder != null)
+    //   await javascriptExecutor
+    //       .setPlaceholder(widget.editorOptions!.placeholder!);
+    // if (widget.editorOptions!.baseFontFamily != null)
+    //   await javascriptExecutor
+    //       .setBaseFontFamily(widget.editorOptions!.baseFontFamily!);
   }
 
   _addJSListener() async {
-    _controller!.addJavaScriptHandler(
-        handlerName: 'editor-state-changed-callback://',
-        callback: (c) {
-          print('Callback $c');
-        });
+    // _controller!.addJavaScriptHandler(
+    //     handlerName: 'editor-state-changed-callback://',
+    //     callback: (c) {
+    //       print('Callback $c');
+    //     });
   }
 
   /// Get current HTML from editor
@@ -373,8 +359,7 @@ class RichEditorState extends State<RichEditor> {
 
   /// Clear editor content using Javascript
   clear() {
-    _controller!.evaluateJavascript(
-        source: 'document.getElementById(\'editor\').innerHTML = "";');
+    webCon.runJavaScript('document.getElementById(\'editor\').innerHTML = "";');
   }
 
   /// Focus and Show the keyboard using JavaScript
@@ -396,7 +381,7 @@ class RichEditorState extends State<RichEditor> {
         "    link.media = \"all\";" +
         "    head.appendChild(link);" +
         "}) ();";
-    _controller!.evaluateJavascript(source: jsCSSImport);
+    webCon.runJavaScript(jsCSSImport);
   }
 
   /// if html is equal to html RichTextEditor sets by default at start
@@ -416,3 +401,4 @@ class RichEditorState extends State<RichEditor> {
     await javascriptExecutor.setInputEnabled(false);
   }
 }
+*/

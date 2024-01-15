@@ -61,11 +61,13 @@ class BasicDemo extends StatelessWidget {
       body: RichEditor(
         key: keyEditor,
         value: '''
-I'm Nea is a developer this 
-<p>​
-	<img src="https://i.pinimg.com/736x/dd/e0/fc/dde0fcc5632f23bbe3548cb94941882a.jpg">
-</p>
-        ''', // initial HTML data
+      I'm Nea is a developer this 
+      <p>​
+        <img src="https://i.pinimg.com/736x/dd/e0/fc/dde0fcc5632f23bbe3548cb94941882a.jpg">
+        <img src="https://i.pinimg.com/736x/dd/e0/fc/dde0fcc5632f23bbe3548cb94941882a.jpg">
+      </p>
+      Setec Instit
+          ''', // initial HTML data
         editorOptions: RichEditorOptions(
           placeholder: 'Start typing',
           // backgroundColor: Colors.blueGrey, // Editor's bg color
