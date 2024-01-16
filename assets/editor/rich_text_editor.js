@@ -2,7 +2,7 @@
 // also edit class name in style.css when changing this.
 const resizableImageClass = "resizable";
 
-const EditorDefaultHtml = "<p>​</p>";
+const EditorDefaultHtml = "";
 
 
 var editor = {
