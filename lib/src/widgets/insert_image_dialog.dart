@@ -37,7 +37,11 @@ class _InsertImageDialogState extends State<InsertImageDialog> {
           TextFormField(
             controller: link,
             validator: (value) {
-              return "Please input link image";
+              if (value!.trim().isEmpty) {
+                return "Please input link image";
+              } else {
+                return null;
+              }
             },
             decoration: InputDecoration(hintText: 'https://...', isDense: true),
           ),

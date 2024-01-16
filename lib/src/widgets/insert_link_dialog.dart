@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../utils/utils.dart';
 import 'custom_dialog_template.dart';
 
 class InsertLinkDialog extends StatelessWidget {
@@ -16,7 +17,11 @@ class InsertLinkDialog extends StatelessWidget {
           TextFormField(
             controller: link,
             validator: (value) {
-              return "Please input link";
+              if (value!.trim().isEmpty) {
+                return "Please input link";
+              } else {
+                return null;
+              }
             },
             decoration: InputDecoration(
               hintText: 'https://...',
@@ -27,7 +32,11 @@ class InsertLinkDialog extends StatelessWidget {
           TextFormField(
             controller: label,
             validator: (value) {
-              return "Please input label";
+              if (value!.trim().isEmpty) {
+                return "Please input label";
+              } else {
+                return null;
+              }
             },
             decoration: InputDecoration(
               hintText: 'type label text here',
@@ -36,8 +45,9 @@ class InsertLinkDialog extends StatelessWidget {
         ],
         onDone: () {
           _key.currentState!.validate();
-          if (label.text.trim().isNotEmpty) {
-            Navigator.pop(context, [link.text, label.text]);
+          if (label.text.trim().isNotEmpty && link.text.trim().isNotEmpty) {
+            debugPrint("Link : ${formatUrl(link: link.text)}");
+            Navigator.pop(context, [formatUrl(link: link.text), label.text]);
           }
         },
         onCancel: () => Navigator.pop(context),

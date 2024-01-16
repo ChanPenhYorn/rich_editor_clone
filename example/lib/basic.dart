@@ -61,7 +61,7 @@ class BasicDemo extends StatelessWidget {
       body: RichEditor(
         key: keyEditor,
         value: '''
-      I'm Nea is a developer this 
+      
       <p>​
         <img src="https://i.pinimg.com/736x/dd/e0/fc/dde0fcc5632f23bbe3548cb94941882a.jpg">
         <img src="https://i.pinimg.com/736x/dd/e0/fc/dde0fcc5632f23bbe3548cb94941882a.jpg">

@@ -172,6 +172,7 @@ class RichEditorState extends State<RichEditor> {
                     initialOptions: InAppWebViewGroupOptions(
                       crossPlatform: InAppWebViewOptions(
                         supportZoom: false,
+                        transparentBackground: true,
                       ),
                     ),
                     onWebViewCreated: (controller) async {
