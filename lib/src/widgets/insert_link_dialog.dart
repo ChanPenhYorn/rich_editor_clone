@@ -3,10 +3,19 @@ import 'package:flutter/material.dart';
 import '../utils/utils.dart';
 import 'custom_dialog_template.dart';
 
-class InsertLinkDialog extends StatelessWidget {
+class InsertLinkDialog extends StatefulWidget {
+  const InsertLinkDialog();
+  @override
+  State<InsertLinkDialog> createState() => _InsertLinkDialogState();
+}
+
+class _InsertLinkDialogState extends State<InsertLinkDialog> {
   final link = TextEditingController();
+
   final label = TextEditingController();
+
   final _key = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Form(
