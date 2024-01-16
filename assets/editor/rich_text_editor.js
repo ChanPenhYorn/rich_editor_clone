@@ -65,19 +65,19 @@ var editor = {
 
     _ensureEditorInsertsParagraphWhenPressingEnter: function() {
         // see https://stackoverflow.com/a/36373967
-        this._executeCommand("DefaultParagraphSeparator", "p");
+        // this._executeCommand("DefaultParagraphSeparator", "p");
 
-        this._textField.innerHTML = ""; // clear previous content
+        // this._textField.innerHTML = ""; // clear previous content
 
-        var newElement = document.createElement("p");
-        newElement.innerHTML = "&#8203";
-        this._textField.appendChild(newElement);
+        // var newElement = document.createElement("p");
+        // newElement.innerHTML = "&#8203";
+        // this._textField.appendChild(newElement);
 
-        var selection=document.getSelection();
-        var range=document.createRange();
-        range.setStart(newElement.firstChild, 1);
-        selection.removeAllRanges();
-        selection.addRange(range);
+        // var selection=document.getSelection();
+        // var range=document.createRange();
+        // range.setStart(newElement.firstChild, 1);
+        // selection.removeAllRanges();
+        // selection.addRange(range);
     },
 
     _initDragImageToResize: function() {
@@ -226,7 +226,7 @@ var editor = {
             }
         }
         else {
-            this._ensureEditorInsertsParagraphWhenPressingEnter();
+            // this._ensureEditorInsertsParagraphWhenPressingEnter();
 
             this._htmlSetByApplication = null;
         }

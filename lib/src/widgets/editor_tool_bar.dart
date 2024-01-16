@@ -11,7 +11,7 @@ class EditorToolBar extends StatelessWidget {
   final Function(File image)? getImageUrl;
   final Function(File video)? getVideoUrl;
   final JavascriptExecutorBase javascriptExecutor;
-  final bool? enableVideo;
+  final bool? enableVideo, enabledHeading;
   final bool isCustom;
   final Color? iconColor;
   final Widget? video,
@@ -80,6 +80,7 @@ class EditorToolBar extends StatelessWidget {
     this.bulletList,
     this.numList,
     this.checkBox,
+    this.enabledHeading,
   });
 
   @override
@@ -178,34 +179,37 @@ class EditorToolBar extends StatelessWidget {
                           },
                         ),
                       ),
-                      TabButton(
-                        tooltip: 'Font format',
-                        icon: font ??
-                            Icon(
-                              Icons.text_format,
-                            ),
-                        onTap: () async {
-                          var command = await showDialog(
-                            // isScrollControlled: true,
-                            context: context,
-                            builder: (_) {
-                              return HeadingDialog();
-                            },
-                          );
-                          if (command != null) {
-                            if (command == 'p') {
-                              await javascriptExecutor
-                                  .setFormattingToParagraph();
-                            } else if (command == 'pre') {
-                              await javascriptExecutor.setPreformat();
-                            } else if (command == 'blockquote') {
-                              await javascriptExecutor.setBlockQuote();
-                            } else {
-                              await javascriptExecutor
-                                  .setHeading(int.tryParse(command)!);
+                      Visibility(
+                        visible: enabledHeading ?? true,
+                        child: TabButton(
+                          tooltip: 'Font format',
+                          icon: font ??
+                              Icon(
+                                Icons.text_format,
+                              ),
+                          onTap: () async {
+                            var command = await showDialog(
+                              // isScrollControlled: true,
+                              context: context,
+                              builder: (_) {
+                                return HeadingDialog();
+                              },
+                            );
+                            if (command != null) {
+                              if (command == 'p') {
+                                await javascriptExecutor
+                                    .setFormattingToParagraph();
+                              } else if (command == 'pre') {
+                                await javascriptExecutor.setPreformat();
+                              } else if (command == 'blockquote') {
+                                await javascriptExecutor.setBlockQuote();
+                              } else {
+                                await javascriptExecutor
+                                    .setHeading(int.tryParse(command)!);
+                              }
                             }
-                          }
-                        },
+                          },
+                        ),
                       ),
                       // TODO: Show font button on iOS
                       // Visibility(
@@ -517,34 +521,37 @@ class EditorToolBar extends StatelessWidget {
                               },
                             ),
                           ),
-                          TabButton(
-                            tooltip: 'Font format',
-                            icon: font ??
-                                Icon(
-                                  Icons.text_format,
-                                ),
-                            onTap: () async {
-                              var command = await showDialog(
-                                // isScrollControlled: true,
-                                context: context,
-                                builder: (_) {
-                                  return HeadingDialog();
-                                },
-                              );
-                              if (command != null) {
-                                if (command == 'p') {
-                                  await javascriptExecutor
-                                      .setFormattingToParagraph();
-                                } else if (command == 'pre') {
-                                  await javascriptExecutor.setPreformat();
-                                } else if (command == 'blockquote') {
-                                  await javascriptExecutor.setBlockQuote();
-                                } else {
-                                  await javascriptExecutor
-                                      .setHeading(int.tryParse(command)!);
+                          Visibility(
+                            visible: enabledHeading ?? true,
+                            child: TabButton(
+                              tooltip: 'Font format',
+                              icon: font ??
+                                  Icon(
+                                    Icons.text_format,
+                                  ),
+                              onTap: () async {
+                                var command = await showDialog(
+                                  // isScrollControlled: true,
+                                  context: context,
+                                  builder: (_) {
+                                    return HeadingDialog();
+                                  },
+                                );
+                                if (command != null) {
+                                  if (command == 'p') {
+                                    await javascriptExecutor
+                                        .setFormattingToParagraph();
+                                  } else if (command == 'pre') {
+                                    await javascriptExecutor.setPreformat();
+                                  } else if (command == 'blockquote') {
+                                    await javascriptExecutor.setBlockQuote();
+                                  } else {
+                                    await javascriptExecutor
+                                        .setHeading(int.tryParse(command)!);
+                                  }
                                 }
-                              }
-                            },
+                              },
+                            ),
                           ),
                           // TODO: Show font button on iOS
                           // Visibility(

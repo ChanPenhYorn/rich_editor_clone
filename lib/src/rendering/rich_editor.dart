@@ -23,6 +23,7 @@ class RichEditor extends StatefulWidget {
   final double imageRaduis;
   final String? javaScript;
   final Widget? customLoading;
+  final bool? enableVideo, enabledHeading;
   final Widget? video,
       image,
       bold,
@@ -85,6 +86,8 @@ class RichEditor extends StatefulWidget {
     this.numList,
     this.checkBox,
     this.bgColor,
+    this.enableVideo,
+    this.enabledHeading,
   }) : super(key: key);
 
   @override
@@ -263,6 +266,7 @@ class RichEditorState extends State<RichEditor> {
         numList: widget.numList,
         bulletList: widget.bulletList,
         checkBox: widget.checkBox,
+        enabledHeading: widget.enabledHeading,
       );
     } else {
       return EditorToolBar(
@@ -291,6 +295,7 @@ class RichEditorState extends State<RichEditor> {
         numList: widget.numList,
         bulletList: widget.bulletList,
         checkBox: widget.checkBox,
+        enabledHeading: widget.enabledHeading,
       );
     }
   }
