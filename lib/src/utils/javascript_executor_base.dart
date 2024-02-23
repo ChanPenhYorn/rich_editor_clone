@@ -51,7 +51,9 @@ class JavascriptExecutorBase {
 
   /// Run Javascript commands in the editor using the webview controller
   executeJavascript(String command) async {
-    return await _controller!.evaluateJavascript(source: 'editor.$command');
+    if (_controller != null) {
+      return await _controller!.evaluateJavascript(source: 'editor.$command');
+    }
   }
 
   String getCachedHtml() {
@@ -278,9 +280,9 @@ class JavascriptExecutorBase {
 
   // Editor settings commands
   /// Focus on editor and bring up keyboard
-  focus() async {
+  focus({bool showkeyboard = true}) async {
     await executeJavascript("focus();");
-    SystemChannels.textInput.invokeMethod('TextInput.show');
+    if (showkeyboard) SystemChannels.textInput.invokeMethod('TextInput.show');
   }
 
   /// Remove focus from the editor and close the keyboard

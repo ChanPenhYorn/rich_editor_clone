@@ -139,11 +139,13 @@ class RichEditorState extends State<RichEditor> {
 
   _loadHtmlFromAssets() async {
     final filePath = assetPath;
-    _controller!.loadUrl(
-      urlRequest: URLRequest(
-        url: Uri.tryParse('http://localhost:$port/$filePath'),
-      ),
-    );
+    if (_controller != null) {
+      _controller!.loadUrl(
+        urlRequest: URLRequest(
+          url: Uri.tryParse('http://localhost:$port/$filePath'),
+        ),
+      );
+    }
   }
 
   var loading = false;
@@ -331,6 +333,7 @@ class RichEditorState extends State<RichEditor> {
               style.innerHTML = "img{ width: auto;height: auto;pointer-events: none; user-select: none;touch-action: none;overflow: hidden; border: none;border-radius: ${widget.imageRaduis}px;}"
               document.head.appendChild(style);
          ''');
+    javascriptExecutor.focus(showkeyboard: false);
     if (widget.value != null) await javascriptExecutor.setHtml(widget.value!);
     if (widget.editorOptions!.padding != null)
       await javascriptExecutor.setPadding(widget.editorOptions!.padding!);
@@ -402,7 +405,9 @@ class RichEditorState extends State<RichEditor> {
         "    link.media = \"all\";" +
         "    head.appendChild(link);" +
         "}) ();";
-    _controller!.evaluateJavascript(source: jsCSSImport);
+    if (_controller != null) {
+      _controller!.evaluateJavascript(source: jsCSSImport);
+    }
   }
 
   /// if html is equal to html RichTextEditor sets by default at start
