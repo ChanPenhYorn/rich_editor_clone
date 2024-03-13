@@ -16,6 +16,7 @@ class RichEditor extends StatefulWidget {
   final RichEditorOptions? editorOptions;
   final Function(File image)? getImageUrl;
   final Function(File video)? getVideoUrl;
+  final void Function() onLoadStop, onLoadStart;
   final Color? iconColor, bgColor;
   final EdgeInsetsGeometry? margin;
   final Decoration? decoration;
@@ -88,6 +89,8 @@ class RichEditor extends StatefulWidget {
     this.bgColor,
     this.enableVideo,
     this.enabledHeading,
+    required this.onLoadStop,
+    required this.onLoadStart,
   }) : super(key: key);
 
   @override
@@ -185,6 +188,8 @@ class RichEditorState extends State<RichEditor> {
                       setState(() {
                         loading = true;
                       });
+                      widget.onLoadStart();
+
                       if (!kIsWeb && !Platform.isAndroid) {
                         await _loadHtmlFromAssets();
                       } else {
@@ -202,6 +207,7 @@ class RichEditorState extends State<RichEditor> {
                         await _setInitialValues();
                         _addJSListener();
                       }
+                      widget.onLoadStop();
                       setState(() {
                         loading = false;
                       });
