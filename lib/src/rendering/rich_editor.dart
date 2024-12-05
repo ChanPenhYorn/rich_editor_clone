@@ -145,7 +145,7 @@ class RichEditorState extends State<RichEditor> {
     if (_controller != null) {
       _controller!.loadUrl(
         urlRequest: URLRequest(
-          url: Uri.tryParse('http://localhost:$port/$filePath'),
+          url: WebUri.uri(Uri.parse('http://localhost:$port/$filePath')),
         ),
       );
     }
@@ -195,8 +195,8 @@ class RichEditorState extends State<RichEditor> {
                       } else {
                         await _controller!.loadUrl(
                           urlRequest: URLRequest(
-                            url: Uri.tryParse(
-                                'file:///android_asset/flutter_assets/$assetPath'),
+                            url: WebUri.uri(Uri.parse(
+                                'file:///android_asset/flutter_assets/$assetPath')),
                           ),
                         );
                       }

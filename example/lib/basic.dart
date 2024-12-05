@@ -93,6 +93,8 @@ class BasicDemo extends StatelessWidget {
               '04/file_example_MP4_480_1_5MG.mp4';
           return link;
         },
+        onLoadStop: () {},
+        onLoadStart: () {},
       ),
     );
   }
