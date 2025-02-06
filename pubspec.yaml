@@ -13,7 +13,8 @@ dependencies:
   flutter_inappwebview: ^6.1.5
   mime: ^1.0.4
   image_picker: ^0.8.9
-  flutter_widget_from_html_core: ^0.14.7
+  # flutter_widget_from_html_core: ^0.14.7
+  flutter_widget_from_html_core: ^0.15.2
   flutter_colorpicker: ^1.0.3
   path: ^1.8.2
   xml2json: ^5.3.6
