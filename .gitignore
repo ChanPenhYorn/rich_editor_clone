@@ -79,3 +79,6 @@ build/
 .notes
 .DS_Store
 .idea
+
+# FVM Version Cache
+.fvm/
